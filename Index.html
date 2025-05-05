@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Nova Canvas</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #121212;
+      color: #e0e0e0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    h1 {
+      font-size: 3rem;
+      color: #00ffd9;
+    }
+
+    form {
+      margin-top: 20px;
+      display: none;
+      width: 60%;
+    }
+
+    input[type="text"] {
+      flex: 1;
+      padding: 10px;
+      font-size: 1.2rem;
+      width: 80%;
+      border: none;
+      border-radius: 8px 0 0 8px;
+      outline: none;
+    }
+
+    button {
+      padding: 10px 20px;
+      font-size: 1.2rem;
+      background: #00ffd9;
+      color: #000;
+      border: none;
+      border-radius: 0 8px 8px 0;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    button:hover {
+      background: #00c3a5;
+    }
+
+    iframe {
+      width: 90%;
+      height: 80vh;
+      border: none;
+      margin-top: 30px;
+      border-radius: 12px;
+      display: none;
+    }
+
+    small {
+      opacity: 0.4;
+      font-size: 0.9rem;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Nova Canvas</h1>
+  <small>Press <strong>Ctrl + /</strong> to launch</small>
+
+  <form id="hiddenForm">
+    <input type="text" id="urlInput" placeholder="Enter site URL (e.g. example.com)" />
+    <button type="submit">Open</button>
+  </form>
+
+  <iframe id="proxyFrame"></iframe>
+
+  <script>
+    const form = document.getElementById('hiddenForm');
+    const input = document.getElementById('urlInput');
+    const frame = document.getElementById('proxyFrame');
+
+    // Show form when pressing Ctrl + /
+    document.addEventListener('keydown', (e) => {
+      if (e.ctrlKey && e.key === '/') {
+        form.style.display = 'flex';
+      }
+    });
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const rawUrl = input.value.startsWith('http') ? input.value : 'http://' + input.value;
+      const encoded = btoa(rawUrl); // base64 encode
+      frame.src = `/canvas?q=${encoded}`;
+      frame.style.display = 'block';
+    });
+  </script>
+</body>
+</html>
