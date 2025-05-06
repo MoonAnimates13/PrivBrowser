@@ -2,50 +2,79 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Nova Canvas</title>
+  <title>WattTab</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
+    :root {
+      --glass-bg: rgba(255, 255, 255, 0.05);
+      --glass-border: rgba(255, 255, 255, 0.15);
+      --accent: #00ffd9;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
     body {
+      margin: 0;
       font-family: 'Segoe UI', sans-serif;
-      background: #121212;
+      background: #0f0f0f;
       color: #e0e0e0;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      height: 100vh;
-      margin: 0;
+      min-height: 100vh;
+    }
+
+    .container {
+      text-align: center;
+      padding: 2rem;
     }
 
     h1 {
       font-size: 3rem;
-      color: #00ffd9;
+      color: var(--accent);
+      margin-bottom: 0.5rem;
     }
 
-    form {
-      margin-top: 20px;
+    small {
+      opacity: 0.5;
+    }
+
+    .form-wrapper {
+      margin-top: 2rem;
       display: none;
-      width: 60%;
+      backdrop-filter: blur(10px);
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: 12px;
+      padding: 1rem;
+      display: flex;
+      width: 90%;
+      max-width: 700px;
     }
 
     input[type="text"] {
       flex: 1;
-      padding: 10px;
-      font-size: 1.2rem;
-      width: 80%;
+      padding: 12px;
+      font-size: 1.1rem;
       border: none;
       border-radius: 8px 0 0 8px;
+      background: #222;
+      color: #fff;
       outline: none;
     }
 
     button {
-      padding: 10px 20px;
-      font-size: 1.2rem;
-      background: #00ffd9;
+      padding: 12px 20px;
+      font-size: 1.1rem;
+      background: var(--accent);
       color: #000;
       border: none;
       border-radius: 0 8px 8px 0;
       cursor: pointer;
-      transition: background 0.3s;
+      transition: background 0.3s ease;
     }
 
     button:hover {
@@ -53,50 +82,77 @@
     }
 
     iframe {
-      width: 90%;
-      height: 80vh;
+      margin-top: 2rem;
       border: none;
-      margin-top: 30px;
       border-radius: 12px;
+      width: 95%;
+      height: 75vh;
       display: none;
     }
 
-    small {
-      opacity: 0.4;
-      font-size: 0.9rem;
-      margin-top: 10px;
+    @media (max-width: 600px) {
+      h1 {
+        font-size: 2rem;
+      }
+
+      .form-wrapper {
+        flex-direction: column;
+        gap: 0.5rem;
+        border-radius: 10px;
+      }
+
+      input[type="text"], button {
+        border-radius: 8px;
+        width: 100%;
+      }
+
+      button {
+        border-radius: 8px;
+      }
     }
   </style>
 </head>
 <body>
-  <h1>Nova Canvas</h1>
-  <small>Press <strong>Ctrl + /</strong> to launch</small>
+  <div class="container">
+    <h1>WattTab</h1>
+    <small>Press <strong>Ctrl + /</strong> to open input</small>
 
-  <form id="hiddenForm">
-    <input type="text" id="urlInput" placeholder="Enter site URL (e.g. example.com)" />
-    <button type="submit">Open</button>
-  </form>
+    <form id="hiddenForm" class="form-wrapper">
+      <input type="text" id="urlInput" placeholder="Enter site URL (e.g. example.com)" />
+      <button type="submit">Go</button>
+    </form>
 
-  <iframe id="proxyFrame"></iframe>
+    <iframe id="proxyFrame"></iframe>
+  </div>
 
   <script>
     const form = document.getElementById('hiddenForm');
     const input = document.getElementById('urlInput');
     const frame = document.getElementById('proxyFrame');
 
-    // Show form when pressing Ctrl + /
+    // Show form on Ctrl + /
     document.addEventListener('keydown', (e) => {
       if (e.ctrlKey && e.key === '/') {
         form.style.display = 'flex';
+        input.focus();
       }
     });
 
+    // Handle form submission
     form.addEventListener('submit', (e) => {
       e.preventDefault();
-      const rawUrl = input.value.startsWith('http') ? input.value : 'http://' + input.value;
-      const encoded = btoa(rawUrl); // base64 encode
-      frame.src = `/canvas?q=${encoded}`;
-      frame.style.display = 'block';
+      let rawUrl = input.value.trim();
+      if (!rawUrl.startsWith('http')) {
+        rawUrl = 'https://' + rawUrl;
+      }
+
+      try {
+        new URL(rawUrl); // basic validation
+        frame.src = rawUrl;
+        frame.style.display = 'block';
+      } catch {
+        alert('Invalid URL. Try again.');
+      }
     });
   </script>
 </body>
